@@ -8,225 +8,281 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace projekat2._2
+namespace projekat4._3
 {
     public partial class Form1 : Form
     {
         public Form1()
         {
             InitializeComponent();
-
-           
         }
-        int brojacX = 0;
-        int brojacO = 0;
-        char[,] m = new char[3, 3];
+
+        char[,] m = new char[6, 7];
+        int[] BrojacRedova = new int[7];
+        int BrojacCrvena = 0;
+        int BrojacZuta = 0;
+        bool crta = false;
+        bool crtanjecrte = false;
+        int brojacC = 0;
+        int brojacZ = 0;
+        int j;
+        int x1;
+        int y1;
+        int x2;
+        int y2;
+        int k;
 
         private void Form1_Load(object sender, EventArgs e)
         {
-           
+            label1.Text = "Crveni igrac";
+            for (int i = 0; i < 7; i++)
+            {
+                BrojacRedova[i] = 0;
+            }
+            if (BrojacCrvena == BrojacZuta)
+            {
+                label1.Text = "Crveni igrac";
+            }
+            else if (BrojacCrvena > BrojacZuta)
+            {
+                label1.Text = "Zuti igrac";
+            }
         }
-        
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
+            int x = 0;
+            int y = 0;
             Graphics g = e.Graphics;
-            Pen olovka = new Pen(Color.Black, 6);
-            // tabla za iks - oks
-            e.Graphics.FillRectangle(Brushes.Black, 400, 100, 8, 600);  //stap vertikalno
-            e.Graphics.FillRectangle(Brushes.Black, 600, 100, 8, 600);  // stap vertikalno
-            e.Graphics.FillRectangle(Brushes.Black, 200, 300, 600, 8);  //stap horizontalno
-            e.Graphics.FillRectangle(Brushes.Black, 200, 500, 600, 8);  //stap horizontalno
+            Pen olovka = new Pen(Color.Black, 15);
 
-            
-            for(int i = 0; i < 3; i++)
+            //tabla za igru
+            g.FillRectangle(Brushes.DarkBlue, 70, 90, 945, 690);
+            // beli krugovi
+            for (int i = 0; i < 6; i++)
             {
-                for(int j = 0; j < 3; j++)
+                for (int j = 0; j < 7; j++)
                 {
-                    if(m[i, j] == 'x')
-                    {  
-                        g.DrawLine(olovka, 210 + (j * 208), 110 + (i * 208), 390 + (j * 208), 290 + (i * 208));
-                        g.DrawLine(olovka, 390 + (j * 208), 110 + (i * 208), 210 + (j * 208), 290 + (i * 208));
-                        Validate(); 
+                    if (m[i, j] == 'r')
+                    {
+                        g.FillEllipse(new SolidBrush(Color.Red), new Rectangle(80 + x, 100 + y, 100, 100));
                     }
-                    else if(m[i, j] == 'o')
-                    { 
-                        g.DrawEllipse(new Pen(Color.Black, 6), new Rectangle(210 + (j * 208), 110 + (i * 208), 180, 180));
-                        Validate();
+                    else if (m[i, j] == 'y')
+                    {
+                        g.FillEllipse(new SolidBrush(Color.Yellow), new Rectangle(80 + x, 100 + y, 100, 100));
+                    }
+                    else
+                    {
+                        g.FillEllipse(new SolidBrush(Color.White), new Rectangle(80 + x, 100 + y, 100, 100));
+                    }
+                    x += 135;
+                }
+                x = 0;
+                y += 111;
+            }
+            if(crta == true)
+            g.DrawLine(olovka, x1, y1, x2, y2);
+
+            crtanjecrte = true;
+        }
+         
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.X > 70 && e.X < 206 && e.Y >= 0 && e.Y < 781)
+            {
+                j = 0;
+                Igraci(j);
+            }
+            else if (e.X > 205 && e.X < 342 && e.Y >= 0 && e.Y < 781)
+            {
+                j = 1;
+                Igraci(j);
+            }
+            else if (e.X > 341 && e.X < 478 && e.Y >= 0 && e.Y < 781)
+            {
+                j = 2;
+                Igraci(j);
+            }
+            else if (e.X > 477 && e.X < 614 && e.Y >= 0 && e.Y < 781)
+            {
+                j = 3;
+                Igraci(j);
+            }
+            else if (e.X > 613 && e.X < 749 && e.Y >= 0 && e.Y < 781)
+            {
+                j = 4;
+                Igraci(j);
+            }
+            else if (e.X > 748 && e.X < 885 && e.Y >= 0 && e.Y < 781)
+            {
+                j = 5;
+                Igraci(j);
+            }
+            else if (e.X > 884 && e.Y < 1021 && e.Y >= 0 && e.Y < 781)
+            {
+                j = 6;
+                Igraci(j);
+            }
+            for (int i = 0; i < 6; i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    if (m[i, j] != '\0' && j < 4 && m[i, j] == m[i, j + 1] && m[i, j + 1] == m[i, j + 2] && m[i, j + 2] == m[i, j + 3]) //desno
+                    {
+                        k = 1;
+                        Kordinate(i, j);
+                        if (crtanjecrte == true)
+                            Pobednik(i, j);
+                    }
+                    else if (m[i, j] != '\0' && j > 2 && m[i, j] == m[i, j - 1] && m[i, j - 1] == m[i, j - 2] && m[i, j - 2] == m[i, j - 3]) //levo
+                    {
+                        k = 2;
+                        Kordinate(i, j);
+                        if (crtanjecrte == true)
+                            Pobednik(i, j);
+                    }
+                    else if (m[i, j] != '\0' && i > 2 && m[i, j] == m[i - 1, j] && m[i - 1, j] == m[i - 2, j] && m[i - 2, j] == m[i - 3, j]) //gore
+                    {
+                        k = 3;
+                        Kordinate(i, j);
+                        if (crtanjecrte == true)
+                          Pobednik(i, j);  
+                    }
+                    else if (m[i, j] != '\0' && i < 3 && m[i, j] == m[i + 1, j] && m[i + 1, j] == m[i + 2, j] && m[i + 2, j] == m[i + 3, j]) //dole
+                    {
+                        k = 4;
+                        Kordinate(i, j);
+                        if (crtanjecrte == true)
+                            Pobednik(i, j);
+                    }
+                    else if (m[i, j] != '\0' && j < 4 && i > 2 && m[i, j] == m[i - 1, j + 1] && m[i - 1, j + 1] == m[i - 2, j + 2] && m[i - 2, j + 2] == m[i - 3, j + 3]) //gore desno
+                    {
+                        k = 5;
+                        Kordinate(i, j);
+                        if (crtanjecrte == true)
+                            Pobednik(i, j);
+                    }
+                    else if (m[i, j] != '\0' && i < 3 && j > 2 && m[i, j] == m[i + 1, j - 1] && m[i + 1, j - 1] == m[i + 2, j - 2] && m[i + 2, j - 2] == m[i + 3, j - 3]) //dole levo
+                    {
+                        k = 6;
+                        Kordinate(i, j);
+                        if (crtanjecrte == true)
+                            Pobednik(i, j);
+                    }
+                    else if (m[i, j] != '\0' && i > 2 && j > 2 && m[i, j] == m[i - 1, j - 1] && m[i - 1, j - 1] == m[i - 2, j - 2] && m[i - 2, j - 2] == m[i - 3, j - 3]) // gore levo
+                    {
+                        k = 7;
+                        Kordinate(i, j);
+                        if (crtanjecrte == true)
+                            Pobednik(i, j);
+                    }
+                    else if (m[i, j] != '\0' && i < 3 && j < 4 && m[i, j] == m[i + 1, j + 1] && m[i + 1, j + 1] == m[i + 2, j + 2] && m[i + 2, j + 2] == m[i + 3, j + 3]) //dole desno
+                    {
+                        k = 8;
+                        Kordinate(i, j);
+                        if (crtanjecrte == true)
+                            Pobednik(i, j);
                     }
                 }
             }
         }
-
-        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        private void Kordinate(int i, int j)
         {
-            if(e.X > 199 &&  e.X < 401 && e.Y < 301 && e.Y > 99)
+            crta = true;
+            x1 = 130 + (j * 135);
+            y1 = 150 + (i * 111);
+            if(k == 1)
             {
-                if(brojacX == brojacO)
-                {
-                    m[0, 0] = 'x';
-                    brojacX++;
-                }
-                else if(brojacX > brojacO)
-                {
-                    m[0, 0] = 'o';
-                    brojacO++;  
-                }
-                Invalidate();
+                x2 = 130 + ((j + 3) * 135);
+                y2 = 150 + (i * 111);
             }
-            else if(e.X > 408 && e.X < 609 && e.Y > 99 && e.Y < 301)
+            else if(k == 2)
             {
-                if (brojacX == brojacO)
-                {
-                    m[0, 1] = 'x';
-                    brojacX++;
-                }
-                else if (brojacX > brojacO)
-                {
-                    m[0, 1] = 'o';
-                    brojacO++;
-                }
-                Invalidate();
+                x2 = 130 + ((j - 3) * 135);
+                y2 = 150 + (i * 111);
             }
-            else if(e.X > 616 && e.X < 817 && e.Y > 99 && e.Y < 301)
+            else if(k == 3)
             {
-                if (brojacX == brojacO)
-                {
-                    m[0, 2] = 'x';
-                    brojacX++;
-                }
-                else if (brojacX > brojacO)
-                {
-                    m[0, 2] = 'o';
-                    brojacO++;
-                }
-                Invalidate();
+                x2 = 130 + (j * 135);
+                y2 = 150 + ((i - 3) * 111);
             }
-            else if(e.X > 199 && e.X < 401 && e.Y > 308 && e.Y < 510)
+            else if(k == 4)
             {
-                if (brojacX == brojacO)
-                {
-                    m[1, 0] = 'x';
-                    brojacX++;
-                }
-                else if (brojacX > brojacO)
-                {
-                    m[1, 0] = 'o';
-                    brojacO++;
-                }
-                Invalidate();
+                x2 = 130 + (j * 135);
+                y2 = 150 + ((i + 3) * 111);
             }
-            else if(e.X > 408 && e.X < 609 && e.Y > 308 && e.Y < 510)
+            else if(k == 5)
             {
-                if (brojacX == brojacO)
-                {
-                    m[1, 1] = 'x';
-                    brojacX++;
-                }
-                else if (brojacX > brojacO)
-                {
-                    m[1, 1] = 'o';
-                    brojacO++;
-                }
-                Invalidate();
+                x2 = 130 + ((j + 3) * 135);
+                y2 = 150 + ((i - 3) * 111);
             }
-            else if(e.X > 616 && e.X < 817 && e.Y > 308 && e.Y < 510)
+            else if(k == 6)
             {
-                if (brojacX == brojacO)
-                {
-                    m[1, 2] = 'x';
-                    brojacX++;
-                }
-                else if (brojacX > brojacO)
-                {
-                    m[1, 2] = 'o';
-                    brojacO++;
-                }
-                Invalidate();
+                x2 = 130 + ((j - 3) * 135);
+                y2 = 150 + ((i + 3) * 111);
             }
-            else if(e.X > 199 && e.X < 401 && e.Y > 518 && e.Y < 717)
+            else if(k == 7)
             {
-                if (brojacX == brojacO)
-                {
-                    m[2, 0] = 'x';
-                    brojacX++;
-                }
-                else if (brojacX > brojacO)
-                {
-                    m[2, 0] = 'o';
-                    brojacO++;
-                }
-                Invalidate();
+                x2 = 130 + ((j - 3) * 135);
+                y2 = 150 + ((i - 3) * 111);
             }
-            else if(e.X > 408 && e.X < 609 && e.Y > 518 && e.Y < 717)
+            else if(k == 8)
             {
-                if (brojacX == brojacO)
-                {
-                    m[2, 1] = 'x';
-                    brojacX++;
-                }
-                else if (brojacX > brojacO)
-                {
-                    m[2, 1] = 'o';
-                    brojacO++;
-                }
-                Invalidate();
+                x2 = 130 + ((j + 3) * 135);
+                y2 = 150 + ((i + 3) * 111);
             }
-            else if(e.X > 616 && e.X < 817 && e.Y > 518 && e.Y < 717)
+            
+            if (crtanjecrte == true)
+                Pobednik(i, j);
+        }
+        private void Pobednik(int i, int j)
+        {
+            if (m[i, j] == 'r')
             {
-                if (brojacX == brojacO)
-                {
-                    m[2, 2] = 'x';
-                    brojacX++;
-                }
-                else if (brojacX > brojacO)
-                {
-                    m[2, 2] = 'o';
-                    brojacO++;
-                }
+                brojacC++;
+                if (brojacC == 1) DispleyMessage("Crveni igrac je pobedio");
+            }
+            else if (m[i, j] == 'y')
+            {
+                brojacZ++;
+                if (brojacZ == 1) DispleyMessage("Zuti igrac je pobedio");
+            }
+        }
+        private void Igraci(int j)
+        {
+            if (BrojacCrvena == BrojacZuta)
+            {
+                label1.Text = "Crveni igrac";
+                m[5 - BrojacRedova[j], j] = 'r';
+                BrojacCrvena++;
+            }
+            else if (BrojacCrvena > BrojacZuta)
+            {
+                label1.Text = "Zuti igrac";
+                m[5 - BrojacRedova[j], j] = 'y';
+                BrojacZuta++;
+            }
+
+            BrojacRedova[j]++;
+            Invalidate();
+        }
+        private void DispleyMessage(string poruka)
+        {
+            DialogResult dialog = MessageBox.Show(poruka, "", MessageBoxButtons.OK);
+            if (dialog == DialogResult.OK)
+            {
+                m = new char[6, 7];
+                BrojacRedova = new int[7];
+                BrojacCrvena = 0;
+                BrojacZuta = 0;
+                brojacC = 0;
+                brojacZ = 0;
+                x1 = 0;
+                x2 = 0;
+                y1 = 0;
+                y2 = 0;
                 Invalidate();
             }
 
-
-            if (m[0, 0] == m[0, 1] && m[0, 1] == m[0, 2])
-            {
-                if (m[0, 1] == 'x') MessageBox.Show("IGRAC X JE POBEDIO");
-                else if (m[0, 1] == 'o') MessageBox.Show("IGRAC O-ks JE POBEDIO");
-            }
-            else if (m[1, 0] == m[1, 1] && m[1, 1] == m[1, 2])
-            {
-                if (m[1, 1] == 'x') MessageBox.Show("IGRAC X JE POBEDIO");
-                else if (m[1, 1] == 'o') MessageBox.Show("IGRAC O-ks JE POBEDIO");
-            }
-            else if (m[2, 0] == m[2, 1] && m[2, 1] == m[2, 2])
-            {
-                if (m[2, 1] == 'x') MessageBox.Show("IGRAC X JE POBEDIO");
-                else if (m[2, 1] == 'o') MessageBox.Show("IGRAC O-ks JE POBEDIO");
-            }
-            else if (m[0, 0] == m[1, 0] && m[1, 0] == m[2, 0])
-            {
-                if (m[1, 0] == 'x') MessageBox.Show("IGRAC X JE POBEDIO");
-                else if (m[0, 0] == 'o') MessageBox.Show("IGRAC O-ks JE POBEDIO");
-            }
-            else if (m[0, 1] == m[1, 1] && m[1, 1] == m[2, 1])
-            {
-                if (m[1, 1] == 'x') MessageBox.Show("IGRAC X JE POBEDIO");
-                else if (m[1, 1] == 'o') MessageBox.Show("IGRAC O-ks JE POBEDIO");
-            }
-            else if (m[0, 2] == m[1, 2] && m[1, 2] == m[2, 2])
-            {
-                if (m[0, 2] == 'x') MessageBox.Show("IGRAC X JE POBEDIO");
-                else if (m[0, 2] == 'o') MessageBox.Show("IGRAC O-ks JE POBEDIO");
-            }
-            else if (m[0, 0] == m[1, 1] && m[1, 1] == m[2, 2])
-            {
-                if (m[0, 0] == 'x') MessageBox.Show("IGRAC X JE POBEDIO");
-                else if (m[0, 0] == 'o') MessageBox.Show("IGRAC O-ks JE POBEDIO");
-            }
-            else if (m[0, 2] == m[1, 1] && m[1, 1] == m[0, 0])
-            {
-                if (m[0, 2] == 'x') MessageBox.Show("IGRAC X JE POBEDIO");
-                else if (m[0, 2] == 'o') MessageBox.Show("IGRAC O-ks JE POBEDIO");
-            }
         }
     }
 }
